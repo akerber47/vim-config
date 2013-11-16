@@ -211,7 +211,7 @@ colorscheme desert
 
 "--------------------------------"
 " Highlight lines that are too long (80+ characters)
-highlight OverLength ctermbg=darkred
+highlight link OverLength ErrorMsg
 match OverLength /\%>79v.\+/
 
 " Toggle on and off
@@ -224,7 +224,7 @@ noremap <F7> :match OverLength /\%>80v.\+/<Enter>
 " (still want to allow spaces to align line continuations)
 " Hideous autocmd is to avoid highlighting end-of-line space while still
 " typing in insert mode.
-highlight ExtraWhitespace ctermbg=darkgreen
+highlight link ExtraWhitespace IncSearch
 if &expandtab
 	2match ExtraWhitespace /\s\+$\|\t\+/
 	autocmd BufWinEnter * 2match ExtraWhitespace /\s\+$\|\t\+/
