@@ -59,6 +59,8 @@ set winheight=15             " Current window shouldn't be too small
 set hidden                   " Hide buffers when they are abandoned
 set switchbuf=useopen,split  " For quick fix lists, jump to file containing
                              " errors if already open, else split to open it
+set splitbelow               " Put newly opened split windows below...
+set splitright               " ... and to the right of current window
 
 " --------------------------------------------------------------------------- "
 "  7 multiple tab pages
@@ -164,7 +166,7 @@ set noswapfile               " No swap files
 " --------------------------------------------------------------------------- "
 
 set history=128              " Remember last 128 commands
-set wildmode=list:longest    " Tab complete file names bash-style
+set wildmode=longest,list    " Tab complete file names bash-style
 " Wildcards ignore lots of files we would never open in vim
 set wildignore+=*.bak,*.swp,*.tmp,*~
 set wildignore+=*.o,*.a,*.d,*.so,*.out
@@ -245,6 +247,9 @@ noremap k s
 noremap - 0
 noremap _ $
 
+" Easy movement between matching brace / paren pairs
+noremap <Tab> %
+
 " Hardcore vim mode: no arrow keys in insert, normal, visual, or operator mode
 noremap <Up> <Nop>
 noremap <Down> <Nop>
@@ -258,6 +263,8 @@ inoremap <Right> <Nop>
 " Use , as map leader for custom fancy mappings
 let mapleader=","
 
+" Quickly stop highlighting most recent search
+nnoremap <Leader><Space> :nohlsearch<CR>
 
 " Use hard tabs (will display at width 4)
 " Note that we use retab! to replace spaces with tabs
