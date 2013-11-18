@@ -1,14 +1,14 @@
 "
 " ~/.vimrc
 "
-" This is your Vim initialization file. It is read on Vim startup.
-"
-" Change this file to customize your Vim settings.
-"
-" Vim treats lines beginning with " as comments.
-"
-" Layout taken from
+" Inspired by
 " http://dougireton.com/blog/2013/02/23/layout-your-vimrc-like-a-boss/
+" http://stevelosh.com/blog/2010/09/coming-home-to-vim/
+" http://nvie.com/posts/how-i-boosted-my-vim/
+" --------------------------------------------------------------------------- "
+" --------------------------------------------------------------------------- "
+"                                 OPTIONS
+" --------------------------------------------------------------------------- "
 " --------------------------------------------------------------------------- "
 "  1 important
 " --------------------------------------------------------------------------- "
@@ -37,13 +37,17 @@ set incsearch                " Incremental search
 set scrolloff=3              " Keep some lines around current line
 let &showbreak = '+++ '      " Explicitly mark line continuations with +++
 set linebreak                " Only break lines at word boundaries
-set number                   " Show line numbers
+set relativenumber           " Show line numbers relative to current line
+set number                   " ... but still give abs number for current line
+set list                     " Show whitespace using characters ...
+set listchars=tab:>-,trail:. " ... tabs and trailing spaces
 
 " --------------------------------------------------------------------------- "
 "  5 syntax, highlighting and spelling
 " --------------------------------------------------------------------------- "
 
 set background=dark          " Adjust colors for dark terminal background
+set hlsearch                 " Highlight all matches of previous search
 
 " --------------------------------------------------------------------------- "
 "  6 multiple windows
@@ -69,7 +73,8 @@ set title                    " Change window title to include filename
 "  9 using the mouse
 " --------------------------------------------------------------------------- "
 
-set mouse=a                  " Enable mouse usage (all modes) in terminals
+set mouse=                   " Disable mouse (allows copying from vim
+                             " via middle click paste)
 
 " --------------------------------------------------------------------------- "
 " 10 printing
@@ -97,6 +102,7 @@ set textwidth=79             " Used to break comments (and text if enabled)
 set backspace=2              " Can backspace over everything in insert mode
 set formatoptions=croq       " Automatically wrap and 'gq' comments, and insert
                              " comment leaders on new lines
+set formatoptions+=1         " Don't break after 1-letter words
 set formatoptions+=j         " Remove comment leader when joining lines
 set formatoptions+=n         " Autoformat numbered lists
 set completeopt=menuone      " Always show popup menu for C-n completion...
@@ -144,10 +150,13 @@ set foldmethod=manual        " No automatically created folds
 " --------------------------------------------------------------------------- "
 
 set nomodeline               " Mode lines are scary
+set nowritebackup            " No backup files when overwriting
 
 " --------------------------------------------------------------------------- "
 " 19 the swap file
 " --------------------------------------------------------------------------- "
+
+set noswapfile               " No swap files
 
 " --------------------------------------------------------------------------- "
 " 20 command line editing
@@ -183,33 +192,100 @@ set wildignore+=*.class,*.gz,*.hi,*.pdf,*.dvi,*.aux,*.log
 set viminfo='100             " Save registers, pattern/cmd history, and marks
                              " to viminfo file to be loaded on startup
 
+" --------------------------------------------------------------------------- "
+" --------------------------------------------------------------------------- "
+"                      AUTOCOMMANDS AND EXTERNAL FILES
+" --------------------------------------------------------------------------- "
+" --------------------------------------------------------------------------- "
+if has('autocmd')
+
 " Jump to the last position when reopening a file.
-autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
     \| exe "normal! g'\"" | endif
 
-autocmd BufNewFile,BufRead *.hs set comments=b:-- expandtab makeprg=cabal\ build
-autocmd BufNewFile,BufRead *.do call Overrideftscripts()
-autocmd BufNewFile,BufRead *.py set comments=b:# expandtab
-autocmd BufNewFile,BufRead *.c  set cindent " comments=sr:/*,mb:*,ex:*/
-autocmd BufNewFile,BufRead *.rkt set filetype=scheme
-autocmd BufNewFile,BufRead *.pyhtml set filetype=html
-autocmd BufNewFile,BufRead *.flex set filetype=lex
-" autocmd BufNewFile,BufRead *.tex set formatoptions+=t
-" Dvorakitude - home row
+" Fix up some file extensions vim doesn't know about
+au BufNewFile,BufRead *.rkt set filetype=scheme  " plt racket
+au BufNewFile,BufRead *.flex set filetype=lex    " gnu flex
+au BufNewFile,BufRead *.do set filetype=sh       " apenwarr redo
+
+" Automagically open quickfix / location window when running
+" appropriate commands (:make, :grep, etc.)
+au QuickFixCmdPost [^l]* nested cwindow
+au QuickFixCmdPost    l* nested lwindow
+
+filetype plugin indent on    " Detect filetypes, load plugin and indent files
+
+endif
+
+runtime! macros/matchit.vim " Use fancy % matching algorithm
+
+" --------------------------------------------------------------------------- "
+" --------------------------------------------------------------------------- "
+"                                MAPPINGS
+" --------------------------------------------------------------------------- "
+" --------------------------------------------------------------------------- "
+
+" Shortcut for getting into command mode
+nnoremap ; :
+" Use Dvorak home row for movements (htns not hjkl)
 noremap t gj
 noremap n gk
 noremap s l
-" need to move search
+noremap S L
+" Move overwritten keys:
 noremap l n
 noremap L N
-" l for Look
+" l for 'lookup next search'
+noremap k s
+" k for 'kill (and replace) some characters'
+" never use t or T movements anyway, or S command
+
+" Easy movement to start and end of line
+noremap - 0
+noremap _ $
+
+" Hardcore vim mode: no arrow keys in insert, normal, visual, or operator mode
+noremap <Up> <Nop>
+noremap <Down> <Nop>
+noremap <Left> <Nop>
+noremap <Right> <Nop>
+inoremap <Up> <Nop>
+inoremap <Down> <Nop>
+inoremap <Left> <Nop>
+inoremap <Right> <Nop>
+
+" Use , as map leader for custom fancy mappings
+let mapleader=","
+
+
+" Use hard tabs (will display at width 4)
+" Note that we use retab! to replace spaces with tabs
+noremap <F8> :set noexpandtab<Enter> :retab!<Enter>
+" Use soft tabs (4 spaces)
+noremap <F9> :set expandtab<Enter> :retab<Enter>
+
+" Yay LaTeX compilation!
+noremap <F4> :!pdflatex % < /dev/null<Enter>
+
+" Or other compilation
+noremap <F5> :make<Enter>
+
+" --------------------------------------------------------------------------- "
+" --------------------------------------------------------------------------- "
+"                                 COLORS
+" --------------------------------------------------------------------------- "
+" --------------------------------------------------------------------------- "
 
 syntax enable                " Turn on syntax highlighting
-filetype plugin indent on    " Turn on filetype detection
-
 colorscheme desert
 
-"--------------------------------"
+" Make current line number more obvious, others less obvious
+highlight LineNr ctermfg=242
+highlight CursorLineNr ctermfg=1
+
+" Make comments more muted
+highlight Comment ctermfg=242
+
 " Highlight lines that are too long (80+ characters)
 highlight link OverLength ErrorMsg
 match OverLength /\%>79v.\+/
@@ -236,35 +312,3 @@ else
 	autocmd InsertEnter * 2match ExtraWhitespace /\s\+\%#\@<!$\| \+\ze\t/
 	autocmd InsertLeave * 2match ExtraWhitespace /\s\+$\| \+\ze\t/
 endif
-
-" Use hard tabs (will display at width 4)
-" Note that we use retab! to replace spaces with tabs
-noremap <F8> :set noexpandtab<Enter> :retab!<Enter>
-" Use soft tabs (4 spaces)
-noremap <F9> :set expandtab<Enter> :retab<Enter>
-
-" Yay LaTeX compilation!
-noremap <F4> :!pdflatex % < /dev/null<Enter>
-
-" Or other compilation
-noremap <F5> :make<Enter>
-" Automagically open fixes window when running make
-autocmd QuickFixCmdPost [^l]* nested cwindow
-autocmd QuickFixCmdPost    l* nested lwindow
-
-" This pile of garbage is to simplify splitting worksheets into individual
-" problem files for wkgen. Basically, yank a problem, then hit <F3> to paste
-" that problem into a newly created %num.tex file in pwd. Note that due to
-" vim bugs this file has some extra newlines in it.
-let g:ind = 0
-fun! IncInd()
-	let g:ind = (g:ind + 1)
-	return g:ind
-endf
-noremap <F3> :exe ":redir > ".IncInd().".tex"<Enter> :sil echon @"<Enter> :redir END<Enter>
-
-" Other stuff
-noremap - $
-noremap _ ^
-
-source ~/.vim/cscope_macros.vim
