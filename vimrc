@@ -48,6 +48,7 @@ set listchars=tab:>-,trail:. " ... tabs and trailing spaces
 
 set background=dark          " Adjust colors for dark terminal background
 set hlsearch                 " Highlight all matches of previous search
+set cursorline               " Highlight screen line of cursor
 
 " --------------------------------------------------------------------------- "
 "  6 multiple windows
@@ -280,11 +281,14 @@ syntax enable                " Turn on syntax highlighting
 colorscheme desert
 
 " Make current line number more obvious, others less obvious
-highlight LineNr ctermfg=242
-highlight CursorLineNr ctermfg=1
+autocmd ColorScheme * highlight LineNr ctermfg=242
+autocmd ColorScheme * highlight CursorLineNr ctermfg=1
+" Make current line (very subtly) highlighted
+autocmd ColorScheme * highlight CursorLine cterm=NONE
+autocmd ColorScheme * highlight CursorLine ctermbg=235
 
 " Make comments more muted
-highlight Comment ctermfg=242
+autocmd ColorScheme * highlight Comment ctermfg=248
 
 " Highlight lines that are too long (80+ characters)
 highlight link OverLength ErrorMsg
