@@ -224,6 +224,8 @@ runtime! macros/matchit.vim " Use fancy % matching algorithm
 
 " Use pathogen (~/.vim/bundle/vim-pathogen/autoload/pathogen.vim) to
 " automatically load all packages under ~/.vim/bundle/
+" Note this will not automatically tag all help files included in doc/
+" directories : to do so, run :Helptags in vim
 runtime bundle/vim-pathogen/autoload/pathogen.vim
 execute pathogen#infect()
 
