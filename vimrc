@@ -56,6 +56,7 @@ set cursorline               " Highlight screen line of cursor
 
 set laststatus=2             " Windows always have status lines
 set winheight=15             " Current window shouldn't be too small
+set winwidth=80              " or too narrow
 set hidden                   " Hide buffers when they are abandoned
 set switchbuf=useopen,split  " For quick fix lists, jump to file containing
                              " errors if already open, else split to open it
@@ -204,7 +205,7 @@ if has('autocmd')
 
 " Jump to the last position when reopening a file.
 au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
-    \| exe "normal! g'\"" | endif
+    \ | exe "normal! g'\"" | endif
 
 " Fix up some file extensions vim doesn't know about
 au BufNewFile,BufRead *.rkt set filetype=scheme  " plt racket
@@ -217,6 +218,11 @@ au QuickFixCmdPost [^l]* nested cwindow
 au QuickFixCmdPost    l* nested lwindow
 
 filetype plugin indent on    " Detect filetypes, load plugin and indent files
+
+" Set indentation appropriately for various filetypes
+au FileType lisp,scheme,clojure,racket,haskell
+    \ set expandtab shiftwidth=2 softtabstop=2
+
 
 endif
 
