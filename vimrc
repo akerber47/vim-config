@@ -219,10 +219,11 @@ au QuickFixCmdPost    l* nested lwindow
 
 filetype plugin indent on    " Detect filetypes, load plugin and indent files
 
-" Set indentation appropriately for various filetypes
+" Custom settings for various filetypes
 au FileType lisp,scheme,clojure,racket,haskell
-    \ set expandtab shiftwidth=2 softtabstop=2
-
+    \ set expandtab shiftwidth=2 softtabstop=2 " 2 spaces no tabs
+au FileType tex,text
+    \ set formatoptions+=t " wrap all text
 
 endif
 
@@ -278,6 +279,10 @@ let mapleader=","
 
 " Quickly stop highlighting most recent search
 nnoremap <Leader><Space> :nohlsearch<CR>
+" Turn paste mode on and off
+nnoremap <Leader>p :set paste!<CR>
+" Turn line numbering on and off
+nnoremap <Leader>l :set number! relativenumber!<CR>
 
 " Use hard tabs (will display at width 4)
 " Note that we use retab! to replace spaces with tabs
