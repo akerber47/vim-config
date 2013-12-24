@@ -224,9 +224,6 @@ au FileType lisp,scheme,clojure,racket,haskell,ocaml
     \ set expandtab shiftwidth=2 softtabstop=2 " 2 spaces no tabs
 au FileType tex,text
     \ set formatoptions+=t " wrap all text
-" Set indentation appropriately for various filetypes
-au FileType lisp,scheme,clojure,racket,haskell,ocaml
-    \ set expandtab shiftwidth=2 softtabstop=2
 
 endif
 
